@@ -1,6 +1,6 @@
 package program;
 
-public class Zgrada{
+public abstract class Zgrada{
     protected String ime;
     protected String adresa;
     protected String[] sale;

@@ -6,19 +6,29 @@ public class Karta{
     private int brSedista;
     private String film;
     private double cena;
+    private String vreme;
 
+    public Karta(){
+        this.id = 0;
+        this.sala = "nema u ponudi";
+        this.brSedista = 0;
+        this.film = "nema u ponudi";
+        this.cena = 0.0;
+        this.vreme = "NaN";
+    }
 
-    public Karta(int id, String sala, int brSedista, String film, double cena){
+    public Karta(int id, String sala, int brSedista, String film, double cena, String vreme){
         this.id = id;
         this.sala = sala;
         this.brSedista = brSedista;
         this.film = film;
         this.cena = cena;
+        this.vreme = vreme;
     }
 
 
     public int getId(){
-        return id;
+        return this.id;
     }
 
     public void setId(int id){
@@ -26,7 +36,7 @@ public class Karta{
     }
 
     public String getSala(){
-        return sala;
+        return this.sala;
     }
 
     public void setSala(String sala){
@@ -34,7 +44,7 @@ public class Karta{
     }
 
     public int getBrSedista(){
-        return brSedista;
+        return this.brSedista;
     }
 
     public void setBrSedista(int brSedista){
@@ -42,7 +52,7 @@ public class Karta{
     }
 
     public String getFilm(){
-        return film;
+        return this.film;
     }
 
     public void setFilm(String film){
@@ -50,10 +60,15 @@ public class Karta{
     }
 
     public double getCena(){
-        return cena;
+        return this.cena;
     }
 
     public void setCena(double cena){
         this.cena = cena;
+    }
+
+    @Override
+    public String toString(){
+        return "ID karte: " + this.id + " ,Sala" + this.sala + ", Broj sedista: " + this.brSedista + ", Film:" + this.film + ", Cena:" + this.cena + ", Vreme:" + this.vreme;
     }
 }

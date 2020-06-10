@@ -6,6 +6,7 @@ import java.util.Random;
 public class Bioskop extends Zgrada implements Validacija{
     private LinkedList<Karta> kartaLinkedList;
     private LinkedList<Film> filmLinkedList;
+    private int indeksFilmaP;
 
     public Bioskop(String ime, String adresa){
         super(ime, adresa);
@@ -13,6 +14,7 @@ public class Bioskop extends Zgrada implements Validacija{
         this.mesta = new boolean[3][30];
         kartaLinkedList = new LinkedList<Karta>();
         filmLinkedList = new LinkedList<Film>();
+        indeksFilmaP = 0;
         populate();
     }
 
@@ -37,63 +39,107 @@ public class Bioskop extends Zgrada implements Validacija{
             }
         }
 
-
+        filmLinkedList.add(new Film("The Gentlemen", "Action, Comedy, Crime", "1h 53min", "Sala 0", "21:00"));
+        filmLinkedList.add(new Film("Bad Boys for Life", "Action, Comedy, Crime", "2h 4min", "Sala 1", "21:00"));
+        filmLinkedList.add(new Film("The Lodge", "Drama, Horror, Thriller", "1h 48min", "Sala 2", "21:00"));
+        filmLinkedList.add(new Film("Willy Wonka & the Chocolate Factory", "Family, Fantasy, Musical", "1h 40min", "Sala 1", "20:10"));
+        filmLinkedList.add(new Film("The Lighthouse", "Drama, Fantasy, Horror", "1h 49min", "Sala 0", "19:15"));
     }
 
     @Override
-    public boolean proveraSlobodnihMesta(String sala, int mesto){
-        int sala1Mesta = 0;
-        int sala2Mesta = 0;
-        int sala3Mesta = 0;
-
-        for(int i = 0; i < this.sale.length; i++) {
-            for(int j = 0; j < this.mesta[i].length; j++) {
-                if(i == 0) {
-                    if(this.mesta[i][j] == false) {
-                        sala1Mesta++;
-                    }
-                }
-                else if(i == 1) {
-                    if(this.mesta[i][j] == false) {
-                        sala2Mesta++;
-                    }
-                }
-                else if(i == 2) {
-                    if(this.mesta[i][j] == false) {
-                        sala3Mesta++;
-                    }
-                }
+    public boolean proveraSlobodnihMesta(String filmPredstava, int mesto){
+        boolean hasFilm = false;
+        for(int i = 0; i < filmLinkedList.size(); i++) {
+            if(filmLinkedList.get(i).getNaziv().equals(filmPredstava)){
+                hasFilm = true;
+                indeksFilmaP = i;
             }
         }
 
-        System.out.println("Sala 1 ima slobodnih mesta: " + sala1Mesta + " Sala 2 ima slobodnih mesta: " + sala2Mesta + " Sala 3 ima slobodnih mesta: " + sala3Mesta);
+        if(!hasFilm){
+            System.out.println("Nemamo film u ponudi");
+            return false;
+        }
+
+        System.out.print("Slobodna mesta u " + filmLinkedList.get(indeksFilmaP).getSala() + ": ");
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i <  this.sale.length; i++) {
+           if(this.sale[i].equals(filmLinkedList.get(indeksFilmaP).getSala())){
+               for(int j = 0; j < this.mesta[i].length; j++) {
+                   if(!this.mesta[i][j]){
+                       stringBuilder.append(String.valueOf(j) + ", ");
+                   }
+               }
+           }
+        }
+        System.out.println(stringBuilder.toString());
 
         for(int i = 0; i < this.sale.length; i++) {
-            if(this.sale.equals(sala)) {
+            if(this.sale[i].equals(this.filmLinkedList.get(indeksFilmaP).getSala())){
                 for(int j = 0; j < this.mesta[i].length; j++) {
-                    if(j == mesto) {
-                        if(this.mesta[i][j] == false){
+                    if(j == mesto){
+                        if(this.mesta[i][j]){
+                            System.out.println("Mesto je rezervisano, rezervisite drugo mesto");
+                            return false;
+                        }
+                        else{
                             return true;
                         }
                     }
                 }
             }
         }
-        System.out.println("Sala ili mesto koje ste odabrali je nije slobodno, birajte drugo ponudjeno mesto");
+
         return false;
     }
 
     @Override
-    public void rezervacija(String sala, int mesto){
-        for(int i = 0; i < this.sale.length; i++) {
-            if(this.sale.equals(sala)) {
-                for(int j = 0; j < this.mesta[i].length; j++) {
-                    if(j == mesto) {
-                        this.mesta[i][j] = true;
-                       // kartaLinkedList.add(new Karta(1, sala, mesto, ));
+    public Karta rezervacija(String filmPredstava, int mesto){
+        for(int i = 0; i < this.filmLinkedList.size(); i++) {
+            if(this.filmLinkedList.get(i).getNaziv().equals(filmPredstava)) {
+                for(int j = 0; j < this.sale.length; j++) {
+                    if(this.sale[j].equals(this.filmLinkedList.get(i).getSala())){
+                        for(int l = 0; l < this.mesta[j].length; l++) {
+                            if(l == mesto) {
+                                Random random = new Random();
+                                this.mesta[j][l] = true;
+                                int idKarte = random.nextInt(20000);
+                                this.kartaLinkedList.add(new Karta(idKarte, filmLinkedList.get(i).getSala(), mesto, filmPredstava, 350, filmLinkedList.get(i).getVremeFilma()));
+                                System.out.println("Karta rezervisana. Uzivaj te!");
+                                return new Karta(idKarte, filmLinkedList.get(i).getSala(), mesto, filmPredstava, 350, filmLinkedList.get(i).getVremeFilma());
+                            }
+                        }
                     }
                 }
             }
+        }
+        return new Karta();
+    }
+
+    public void slobodnaMesta(){
+        System.out.print("Slobodna mesta u " + this.filmLinkedList.get(indeksFilmaP).getSala() + ": ");
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i <  this.sale.length; i++) {
+            if(this.sale[i].equals(this.filmLinkedList.get(indeksFilmaP).getSala())){
+                for(int j = 0; j < this.mesta[i].length; j++) {
+                    if(!this.mesta[i][j]){
+                        stringBuilder.append(String.valueOf(j) + ", ");
+                    }
+                }
+            }
+        }
+        System.out.println(stringBuilder.toString());
+    }
+
+    public void ponudaFilmova(){
+        for(int i = 0; i < filmLinkedList.size(); i++) {
+            System.out.println(filmLinkedList.get(i).toString());
+        }
+    }
+
+    public void rezervisaneKarte(){
+        for(int i = 0; i < kartaLinkedList.size(); i++) {
+            System.out.println(kartaLinkedList.get(i).toString());
         }
     }
 }
